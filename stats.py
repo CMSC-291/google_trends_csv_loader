@@ -19,10 +19,21 @@ class GoogleTrendAnalyzer:
 
     def most_popular(self):
         """
-        Return the string of the column for the item with highest popularity
+        Return the header of the column for the item with highest popularity
         :return:
         """
-        pass
+        max_col_number = -1
+        max_value = float("-inf")
+        for row in self.table:
+            # for col_number, data in enumerate(row):
+            for col_number in range(row):
+                data = row[col_number]
+                if col_number > 0:
+                    data_float = float(data)
+                    if data_float > max_value:
+                        max_value = data_float
+                        max_col_number = col_number
+        return self.headers[max_col_number]
 
 
 if __name__ == '__main__':
