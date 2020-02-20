@@ -1,10 +1,20 @@
 #!/usr/bin/env python
+import csv
 from sys import argv
 
 
 class GoogleTrendAnalyzer:
     def __init__(self, filename):
         self.filename = filename
+        self.table = []
+        self.headers = []
+        with open(filename, 'r') as f:
+            self.title = f.readline().strip()
+            f.readline()
+            reader = csv.reader(f)
+            self.headers = reader.__next__()
+            for row in reader:
+                self.table.append(row)
 
     def most_popular(self):
         """
