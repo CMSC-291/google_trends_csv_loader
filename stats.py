@@ -27,13 +27,23 @@ class GoogleTrendAnalyzer:
         for row in self.table:
             # for col_number, data in enumerate(row):
             for col_number in range(row):
-                data = row[col_number]
+                popularity_value = row[col_number]
                 if col_number > 0:
-                    data_float = float(data)
+                    data_float = float(popularity_value)
                     if data_float > max_value:
                         max_value = data_float
                         max_col_number = col_number
         return self.headers[max_col_number]
+
+    def time_most_popular(self, col_number):
+        """
+        Returns the date that the search term in column col_number was most
+        popular
+        :param col_number: a column number in the db, between 1 and number of
+         terms, inclusive
+        :return: a date
+        """
+        pass
 
 
 if __name__ == '__main__':
