@@ -2,6 +2,8 @@
 import csv
 from sys import argv
 
+from matplotlib import pyplot
+
 
 class GoogleTrendAnalyzer:
     def __init__(self, filename):
@@ -25,11 +27,11 @@ class GoogleTrendAnalyzer:
         max_col_number = -1
         max_value = float("-inf")
         for row in self.table:
-            # for col_number, data in enumerate(row):
-            for col_number in range(row):
-                popularity_value = row[col_number]
+            for col_number, data in enumerate(row):
+                # for col_number in range(len(row)):
+                #     popularity_value = row[col_number]
                 if col_number > 0:
-                    data_float = float(popularity_value)
+                    data_float = float(data)
                     if data_float > max_value:
                         max_value = data_float
                         max_col_number = col_number
@@ -45,9 +47,32 @@ class GoogleTrendAnalyzer:
         """
         pass
 
+    def plot(self, col_number=1, save_file="test.png"):
+        if col_number >= len(self.headers) or col_number < 1:
+            raise ValueError("Column number ({}) is out of range.  "
+                             "Value numbers are 1 to {}".format(
+                col_number,
+                len(self.headers) - 1
+            ))
+        dates = []
+        data = []
+        for row in self.table:
+            dates.append(row[0])
+            data.append(row[col_number])
+        fig, ax = pyplot.subplots()
+        ax.plot(dates, data)
+
+        ax.set(xlabel='date', ylabel='popularity',
+               title=self.headers[col_number])
+        ax.grid()
+
+        fig.savefig(save_file)
+        pyplot.show()
+
 
 if __name__ == '__main__':
     if len(argv) < 2:
         print("Usage is stats.py [filename]")
     analyzer = GoogleTrendAnalyzer(argv[1])
     print(analyzer.most_popular())
+    analyzer.plot(1)
