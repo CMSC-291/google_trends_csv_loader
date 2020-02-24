@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 import csv
+from datetime import datetime
 from sys import argv
 
 from matplotlib import pyplot
+from matplotlib.dates import date2num, YearLocator, MonthLocator, DateFormatter
 
 
 class GoogleTrendAnalyzer:
@@ -58,7 +60,7 @@ class GoogleTrendAnalyzer:
         data = []
         for row in self.table:
             dates.append(row[0])
-            data.append(row[col_number])
+            data.append(float(row[col_number]))
         fig, ax = pyplot.subplots()
         ax.plot(dates, data)
 
@@ -69,10 +71,46 @@ class GoogleTrendAnalyzer:
         fig.savefig(save_file)
         pyplot.show()
 
+    def plot_all(self, save_file='all.png'):
+        dates = []
+        lines = []
+        for i in range(len(self.headers) - 1):
+            lines.append(list())
+        for row in self.table:
+            dates.append(date2num(datetime.strptime(row[0], '%Y-%m-%d')))
+            for col, cell in enumerate(row[1:]):
+                lines[col].append(float(cell))
+            # data.append(row[col_number])
+
+        fig, ax = pyplot.subplots()
+        # for col, line in enumerate(lines):
+        #     ax.plot(dates, line, label=self.headers[col])
+        for line in lines:
+            ax.plot_date(dates, line, '-')
+
+        title = "\nvs\n".join(self.headers[1:])
+
+
+        ax.set(xlabel='date', ylabel='popularity',
+               title=title)
+        ax.grid()
+        ax.set_ylim([0, 100])
+
+        ax.format_xdata = DateFormatter('%Y-%m-%d')
+        ax.grid(True)
+
+        # rotates and right aligns the x labels, and moves the bottom of the
+        # axes up to make room for them
+        fig.autofmt_xdate()
+
+        fig.savefig(save_file)
+        pyplot.show()
+
 
 if __name__ == '__main__':
     if len(argv) < 2:
         print("Usage is stats.py [filename]")
     analyzer = GoogleTrendAnalyzer(argv[1])
     print(analyzer.most_popular())
-    analyzer.plot(1)
+    # analyzer.plot(1)
+    analyzer.plot_all()
